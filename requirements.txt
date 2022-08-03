@@ -1,0 +1,11 @@
+Flask
+Flask-Admin
+Flask-Migrate
+Flask-SQLAlchemy
+Flask-WTF
+
+gunicorn
+psycopg2-binary
+
+flake8
+pytest

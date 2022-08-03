@@ -1,0 +1,28 @@
+services:
+  db:
+    image: postgres
+    container_name: db
+    restart: always
+    environment:
+      POSTGRES_PASSWORD: pass
+      POSTGRES_USER: user
+      POSTGRES_DB: web
+    volumes:
+      - ./data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+  web:
+    build: .
+    image: web
+    container_name: web
+    command: gunicorn -b 0.0.0.0:5000 "web.app:create_app()" --reload
+    environment:
+      DATABASE_URL: "postgresql://user:pass@db:5432/web"
+      SECRET_KEY: "secret"
+      FLASK_APP: "web.app"
+    ports:
+      - "80:5000"
+    volumes:
+      - .:/usr/src/app
+    depends_on:
+      - db

@@ -1,0 +1,5 @@
+.idea/
+__pycache__/
+data/
+.pytest_cache/
+db.sqlite3

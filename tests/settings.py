@@ -1,0 +1,5 @@
+ENV = 'testing'
+TESTING = True
+SECRET_KEY = 'test'
+SQLALCHEMY_DATABASE_URI = 'sqlite:///:memory:'
+SQLALCHEMY_TRACK_MODIFICATIONS = False
