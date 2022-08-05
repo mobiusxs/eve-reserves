@@ -12,6 +12,8 @@ from web.auth.models import Role
 from web.auth.models import Permission
 from web.extensions import db
 
+session = Session()
+
 
 class SecureAdminIndexView(AdminIndexView):
     def is_visible(self):
@@ -21,8 +23,11 @@ class SecureAdminIndexView(AdminIndexView):
 
     @expose('/')
     def index(self):
-        from web.auth.models import Session
-        user = Session().get_current_user()
+        # from web.auth.models import Session
+        # session = Session()
+        user = session.get_current_user()
+        if not user:
+            return redirect(url_for('auth.authorize'))
         if user.has_role('admin'):
             return self.render(self._template)
         flash('You are not an admin')
@@ -38,7 +43,8 @@ class PublicSiteLink(MenuLink):
 
 class SecuredModelView(ModelView):
     def is_accessible(self):
-        user = Session().get_current_user()
+        # user = Session().get_current_user()
+        user = session.get_current_user()
         return user.has_role('admin')
 
     def inaccessible_callback(self, name, **kwargs):
