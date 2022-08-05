@@ -1,0 +1,10 @@
+{% extends 'base.html' %}
+
+{% block title %}Reserves{% endblock %}
+
+{% block nav %}{% endblock %}
+
+{% block content %}
+  <h1>Reserves</h1>
+  <button onclick="location.href='{{ url_for('auth.authorize') }}'" type="button">Authorize</button>
+{% endblock %}
