@@ -3,6 +3,7 @@ Flask-Admin
 Flask-Migrate
 Flask-SQLAlchemy
 Flask-WTF
+requests
 
 gunicorn
 psycopg2-binary
