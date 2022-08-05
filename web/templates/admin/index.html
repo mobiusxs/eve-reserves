@@ -1,5 +1,44 @@
 {% extends 'admin/master.html' %}
 
 {% block body %}
-  <p>Hello, Admin!</p>
+  <h2>Session</h2>
+  <p>This page lists active sessions. Delete a user's session to forcefully log them out.</p>
+
+  <h2>Role</h2>
+  <p>See assignable roles. Cannot modify.</p>
+
+  <h2>Permission</h2>
+  <p>Assign roles to entities. Entities can be a character, corporation, or alliance. Entity ID must be an integer.</p>
+  <table>
+    <thead>
+      <tr>
+        <td>Role</td>
+        <td>Description</td>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>admin</td>
+        <td>Can access this portion of the site.</td>
+      </tr>
+      <tr>
+        <td>staff</td>
+        <td>Can add, remove, modify doctrines.</td>
+      </tr>
+      <tr>
+        <td>user</td>
+        <td>Can view the public site.</td>
+      </tr>
+    </tbody>
+  </table>
+  
+  <h2>Search</h2>
+  <div id="form">
+    <label for="query">
+      <input id="query" name="query" type="text" placeholder="Entity">
+    </label>
+    <button onclick="search()">Search</button>
+  </div>
+  <table id="results"></table>
+  <script src="{{ url_for('static', filename='js/search.js') }}"></script>
 {% endblock %}
