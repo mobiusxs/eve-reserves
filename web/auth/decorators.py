@@ -1,7 +1,9 @@
 from functools import wraps
 
+from flask import current_app
 from flask import flash
 from flask import redirect
+from flask import request
 from flask import url_for
 
 from web.auth.models import Session
@@ -30,6 +32,15 @@ def authentication_required(f):
 
 
 def authentication_prohibited(f):
+    """Prevent authenticated users from accessing a view.
+    Redirect to AUTH_LOGIN_REDIRECT_URL if authenticated.
+
+    Usage:
+        @authentication_prohibited
+        def some_view():
+            return render_template('some_view.html')
+    """
+
     @wraps(f)
     def decorated_function(*args, **kwargs):
         user = session.get_current_user()
@@ -56,7 +67,7 @@ def role_required(role):
             if user.has_role(role):
                 return f(*args, **kwargs)
             else:
-                # TODO: log attempted access
+                current_app.logger.error(f'{user.name}:{user.character_id} attempted to access {request.full_path} without {role} role')
                 flash('You do not have permission to access that page.')
                 return redirect(url_for(AUTH_LOGIN_REDIRECT_URL))
         return decorated_function
