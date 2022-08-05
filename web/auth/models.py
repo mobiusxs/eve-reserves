@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from flask import request
 
 from web.extensions import db
@@ -17,6 +19,7 @@ class Session(db.Model):
     character_id = db.Column(db.Integer, unique=False, nullable=False)
     corporation_id = db.Column(db.Integer, unique=False, nullable=False)
     alliance_id = db.Column(db.Integer, unique=False, nullable=False)
+    created = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
 
     def save(self):
         db.session.add(self)
@@ -52,6 +55,7 @@ class Session(db.Model):
 class Role(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(128), unique=True, nullable=False)
+    created = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
 
     def __repr__(self):
         return self.name
@@ -62,7 +66,9 @@ class Permission(db.Model):
     role_id = db.Column(db.String(120), db.ForeignKey('role.id'), nullable=False)
     entity_name = db.Column(db.String(120), nullable=False)
     entity_id = db.Column(db.Integer, nullable=False)
-    role = db.relationship('Role', backref=db.backref('entities', lazy='select'))
+    # role = db.relationship('Role', backref=db.backref('entities', lazy='select'))
+    created = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
+    role = db.relationship(Role, backref=db.backref('entities', lazy='dynamic'), foreign_keys=[role_id],)
 
     def __repr__(self):
         return f'{self.role}:{self.entity_name}'
