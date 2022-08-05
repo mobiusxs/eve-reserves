@@ -6,7 +6,6 @@ from flask import Flask
 from flask import render_template
 from flask import request
 
-from web import index
 from web.extensions import admin
 from web.commands import insert
 from web.extensions import db
@@ -31,7 +30,6 @@ def create_app(config='web.settings'):
 def register_blueprints(app):
     """Register Blueprints on the app."""
 
-    app.register_blueprint(index.routes)
 
 
 def register_extensions(app):
