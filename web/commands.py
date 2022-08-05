@@ -17,17 +17,16 @@ def insert():
 
     entities = [
         {
-            'role_id': 1,
             'entity_id': 94268459,
             'entity_name': 'Kim Peek',
         },
         {
-            'role_id': 1,
             'entity_id': 411225042,
             'entity_name': 'BJK',
         },
     ]
     for entity in entities:
-        permission = Permission(**entity)
-        db.session.add(permission)
+        for role_id in range(1, 4):
+            permission = Permission(role_id=role_id, **entity)
+            db.session.add(permission)
     db.session.commit()
