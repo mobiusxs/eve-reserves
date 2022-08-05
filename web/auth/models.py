@@ -7,7 +7,6 @@ from web.settings import AUTH_SESSION_COOKIE_NAME
 class Session(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     session_id = db.Column(db.Integer, unique=True, nullable=False)
-
     access_token = db.Column(db.String(512), unique=False, nullable=False)
     expires_at = db.Column(db.Integer, unique=False, nullable=False)
     refresh_token = db.Column(db.String(512), unique=False, nullable=False)
