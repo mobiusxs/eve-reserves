@@ -22,6 +22,7 @@ SECRET_KEY=secret
 flask db init
 flask db migrate
 flask db upgrade
+flask insert
 ```
 
 1. Run dev server
