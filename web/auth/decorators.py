@@ -7,7 +7,6 @@ from flask import request
 from flask import url_for
 
 from web.auth.models import Session
-from web.settings import AUTH_LOGIN_REDIRECT_URL
 
 session = Session()
 
@@ -45,7 +44,7 @@ def authentication_prohibited(f):
     def decorated_function(*args, **kwargs):
         user = session.get_current_user()
         if user and user.is_authenticated():
-            return redirect(url_for(AUTH_LOGIN_REDIRECT_URL))
+            return redirect(url_for(current_app.config['AUTH_LOGIN_REDIRECT_URL']))
         return f(*args, **kwargs)
     return decorated_function
 
@@ -69,6 +68,6 @@ def role_required(role):
             else:
                 current_app.logger.error(f'{user.name}:{user.character_id} attempted to access {request.full_path} without {role} role')
                 flash('You do not have permission to access that page.')
-                return redirect(url_for(AUTH_LOGIN_REDIRECT_URL))
+                return redirect(url_for(current_app.config['AUTH_LOGIN_REDIRECT_URL']))
         return decorated_function
     return decorator
