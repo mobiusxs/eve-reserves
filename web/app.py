@@ -6,7 +6,10 @@ from flask import Flask
 from flask import render_template
 from flask import request
 
-from web.extensions import admin
+from web import auth
+from web import dashboard
+from web import public
+from web.admin import admin
 from web.commands import insert
 from web.extensions import db
 from web.extensions import migrate
@@ -30,6 +33,9 @@ def create_app(config='web.settings'):
 def register_blueprints(app):
     """Register Blueprints on the app."""
 
+    app.register_blueprint(auth.routes)
+    app.register_blueprint(dashboard.routes)
+    app.register_blueprint(public.routes)
 
 
 def register_extensions(app):
