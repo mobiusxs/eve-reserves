@@ -8,6 +8,7 @@ from flask import request
 
 from web import index
 from web.extensions import admin
+from web.commands import insert
 from web.extensions import db
 from web.extensions import migrate
 from web.logging import stream_handler
@@ -23,6 +24,7 @@ def create_app(config='web.settings'):
     register_extensions(app)
     register_shell_context(app)
     register_error_handlers(app)
+    register_commands(app)
     return app
 
 
@@ -87,3 +89,7 @@ def configure_logging(app):
 
         app.logger.info(f'{request.remote_addr} {request.method} {request.full_path} {response.status_code}')
         return response
+
+
+def register_commands(app):
+    app.cli.add_command(insert)
