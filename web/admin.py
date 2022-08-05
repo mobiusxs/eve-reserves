@@ -52,12 +52,13 @@ class SecuredModelView(ModelView):
 
 
 class SessionModelView(SecuredModelView):
-    column_list = ('name', 'character_id', 'corporation_id', 'alliance_id')
+    column_list = ('name', 'character_id', 'corporation_id', 'alliance_id', 'created')
     can_create = False
     can_edit = False
 
 
 class RoleModelView(SecuredModelView):
+    column_list = ('name', 'id')
     form_excluded_columns = ('entities',)
     can_create = False
     can_edit = False
@@ -65,11 +66,18 @@ class RoleModelView(SecuredModelView):
 
 
 class PermissionModelView(SecuredModelView):
-    pass
+    page_size = 20
+    # column_searchable_list = ['name', 'character_id', 'corporation_id', 'alliance_id']
+    column_filters = ['entity_name', 'role']
+    # column_editable_list = ['name']
+    create_modal = True
+    edit_modal = True
+    can_export = True
+    column_sortable_list = ['entity_name', 'role.name']
 
 
 admin = Admin(index_view=SecureAdminIndexView(name='Admin Home'))
 admin.add_link(PublicSiteLink(name='Public Site'))
-admin.add_view(SessionModelView(model=Session, session=db.session, name='Session'))
-admin.add_view(RoleModelView(model=Role, session=db.session, name='Role'))
-admin.add_view(PermissionModelView(model=Permission, session=db.session, name='Permission'))
+admin.add_view(SessionModelView(model=Session, session=db.session, name='Session', category='Auth'))
+admin.add_view(RoleModelView(model=Role, session=db.session, name='Role', category='Auth'))
+admin.add_view(PermissionModelView(model=Permission, session=db.session, name='Permission', category='Auth'))
