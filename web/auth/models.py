@@ -1,9 +1,9 @@
 from datetime import datetime
 
+from flask import current_app
 from flask import request
 
 from web.extensions import db
-from web.settings import AUTH_SESSION_COOKIE_NAME
 
 
 class Session(db.Model):
@@ -30,7 +30,7 @@ class Session(db.Model):
         db.session.commit()
 
     def is_authenticated(self):
-        return self.query.filter_by(session_id=request.cookies.get(AUTH_SESSION_COOKIE_NAME)).first() is not None
+        return self.query.filter_by(session_id=request.cookies.get(current_app.config['AUTH_SESSION_COOKIE_NAME'])).first() is not None
 
     def get_portrait_url(self, size=512):
         if size not in [64, 128, 256, 512]:
@@ -49,7 +49,7 @@ class Session(db.Model):
             return False
 
     def get_current_user(self):
-        return self.query.filter_by(session_id=request.cookies.get(AUTH_SESSION_COOKIE_NAME)).first()
+        return self.query.filter_by(session_id=request.cookies.get(current_app.config['AUTH_SESSION_COOKIE_NAME'])).first()
 
 
 class Role(db.Model):
@@ -66,9 +66,8 @@ class Permission(db.Model):
     role_id = db.Column(db.String(120), db.ForeignKey('role.id'), nullable=False)
     entity_name = db.Column(db.String(120), nullable=False)
     entity_id = db.Column(db.Integer, nullable=False)
-    # role = db.relationship('Role', backref=db.backref('entities', lazy='select'))
-    created = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
     role = db.relationship(Role, backref=db.backref('entities', lazy='dynamic'), foreign_keys=[role_id],)
+    created = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
 
     def __repr__(self):
         return f'{self.role}:{self.entity_name}'

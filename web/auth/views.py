@@ -6,6 +6,7 @@ from time import time
 from urllib.parse import urlencode
 
 from flask import abort
+from flask import current_app
 from flask import make_response
 from flask import redirect
 from flask import request
@@ -16,14 +17,6 @@ from requests import post
 from web.auth.models import Session
 from web.auth.decorators import authentication_prohibited
 from web.auth.decorators import authentication_required
-from web.settings import AUTH_CLIENT_ID
-from web.settings import AUTH_SECRET_KEY
-from web.settings import AUTH_SCOPE
-from web.settings import AUTH_CALLBACK_URL
-from web.settings import AUTH_LOGIN_REDIRECT_URL
-from web.settings import AUTH_LOGOUT_REDIRECT_URL
-from web.settings import AUTH_SESSION_COOKIE_NAME
-from web.settings import AUTH_STATE_COOKIE_NAME
 
 
 @authentication_prohibited
@@ -31,14 +24,14 @@ def authorize():
     state = token_urlsafe(64)
     data = {
         'response_type': 'code',
-        'redirect_uri': AUTH_CALLBACK_URL,
-        'client_id': AUTH_CLIENT_ID,
-        'scope': AUTH_SCOPE,
+        'redirect_uri': current_app.config['AUTH_CALLBACK_URL'],
+        'client_id': current_app.config['AUTH_CLIENT_ID'],
+        'scope': current_app.config['AUTH_SCOPE'],
         'state': state
     }
     location = f'https://login.eveonline.com/v2/oauth/authorize/?{urlencode(data)}'
     response = make_response(redirect(location=location, code=302))
-    response.set_cookie(AUTH_STATE_COOKIE_NAME, state)
+    response.set_cookie(current_app.config['AUTH_STATE_COOKIE_NAME'], state)
     return response
 
 
@@ -46,16 +39,16 @@ def callback():
     validate_request_state()
     jwt = request_jwt()
 
-    response = make_response(redirect(url_for(AUTH_LOGIN_REDIRECT_URL)))
-    response.set_cookie(AUTH_STATE_COOKIE_NAME, '', expires=0)
+    response = make_response(redirect(url_for(current_app.config['AUTH_LOGIN_REDIRECT_URL'])))
+    response.set_cookie(current_app.config['AUTH_STATE_COOKIE_NAME'], '', expires=0)
     session_id = create_session(jwt)
-    response.set_cookie(AUTH_SESSION_COOKIE_NAME, session_id)
+    response.set_cookie(current_app.config['AUTH_SESSION_COOKIE_NAME'], session_id)
     return response
 
 
 def validate_request_state():
     returned_state = request.args.get('state')
-    sent_state = request.cookies.get(AUTH_STATE_COOKIE_NAME)
+    sent_state = request.cookies.get(current_app.config['AUTH_STATE_COOKIE_NAME'])
     if returned_state != sent_state:
         abort(400)
 
@@ -66,7 +59,7 @@ def request_jwt():
         'grant_type': 'authorization_code',
         'code': code
     }
-    auth_string = f"{AUTH_CLIENT_ID}:{AUTH_SECRET_KEY}".encode('utf-8')
+    auth_string = f"{current_app.config['AUTH_CLIENT_ID']}:{current_app.config['AUTH_SECRET_KEY']}".encode('utf-8')
     encoded_auth_string = urlsafe_b64encode(auth_string).decode()
     headers = {
         'Authorization': f'Basic {encoded_auth_string}'
@@ -113,14 +106,14 @@ def create_session(jwt):
 
 @authentication_required
 def logout():
-    session_id = request.cookies.get(AUTH_SESSION_COOKIE_NAME)
+    session_id = request.cookies.get(current_app.config['AUTH_SESSION_COOKIE_NAME'])
     if session_id:
         session = Session.query.filter_by(session_id=session_id).first()
 
         if session:
             session.delete()
 
-    response = make_response(redirect(url_for(AUTH_LOGOUT_REDIRECT_URL)))
-    response.set_cookie(AUTH_STATE_COOKIE_NAME, '', expires=0)
-    response.set_cookie(AUTH_SESSION_COOKIE_NAME, '', expires=0)
+    response = make_response(redirect(url_for(current_app.config['AUTH_LOGOUT_REDIRECT_URL'])))
+    response.set_cookie(current_app.config['AUTH_STATE_COOKIE_NAME'], '', expires=0)
+    response.set_cookie(current_app.config['AUTH_SESSION_COOKIE_NAME'], '', expires=0)
     return response

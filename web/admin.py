@@ -23,8 +23,6 @@ class SecureAdminIndexView(AdminIndexView):
 
     @expose('/')
     def index(self):
-        # from web.auth.models import Session
-        # session = Session()
         user = session.get_current_user()
         if not user:
             return redirect(url_for('auth.authorize'))
@@ -43,7 +41,6 @@ class PublicSiteLink(MenuLink):
 
 class SecuredModelView(ModelView):
     def is_accessible(self):
-        # user = Session().get_current_user()
         user = session.get_current_user()
         return user.has_role('admin')
 
