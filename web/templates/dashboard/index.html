@@ -1,0 +1,15 @@
+{% extends 'dashboard/base.html' %}
+
+{% block title %}Dashboard{% endblock %}
+
+{% block content %}
+  <h1>Dashboard</h1>
+  <p>Hello, {{ user.name }}</p>
+  <img src="{{ user.get_portrait_url(128) }}" alt="{{ user.name }}">
+
+  {% if user.has_role('user') %}
+    <p>Authorized</p>
+  {% else %}
+    <p>Unauthorized</p>
+  {% endif %}
+{% endblock %}
