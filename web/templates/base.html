@@ -10,7 +10,7 @@
 </head>
 <body>
   <main>
-    {% block nav %}{% endblock %}
+    {% block nav %}{% include 'partials/nav.html' %}{% endblock %}
     {% include 'partials/flash.html' %}
     {% block content %}{% endblock %}
   </main>
