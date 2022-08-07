@@ -8,6 +8,7 @@ from flask import request
 
 from web import auth
 from web import dashboard
+from web import doctrine
 from web import public
 from web.admin import admin
 from web.commands import insert
@@ -35,6 +36,7 @@ def register_blueprints(app):
 
     app.register_blueprint(auth.routes)
     app.register_blueprint(dashboard.routes)
+    app.register_blueprint(doctrine.routes)
     app.register_blueprint(public.routes)
 
 
